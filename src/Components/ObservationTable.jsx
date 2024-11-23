@@ -1,7 +1,7 @@
 
 const ObservationTable = () => {
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <table className="w-full border-separate border-spacing-0">
         <thead>
           <tr className="bg-purple-600 text-white">
