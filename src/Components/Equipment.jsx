@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Beaker, CircuitBoard, Dog, X } from 'lucide-react';
 
-
 const LabEquipmentUI = () => {
   const [selectedDrug, setSelectedDrug] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -35,8 +34,23 @@ const LabEquipmentUI = () => {
     setShowPreview(true);
   };
 
+  const closeModal = () => {
+    setShowPreview(false);
+  };
+
+  // Add event listener to close modal on Escape key
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+    <div 
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column */}
@@ -120,27 +134,46 @@ const LabEquipmentUI = () => {
           </div>
         </div>
 
-        {/* Preview Modal */}
-        <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Beaker className="w-5 h-5" />
-                {selectedDrug}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-              <img
-                src={`/api/placeholder/640/360`}
-                alt={`Preview of ${selectedDrug}`}
-                className="object-cover"
-              />
+        {/* Custom Modal */}
+        {showPreview && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={closeModal}
+          >
+            <div 
+              className="bg-white rounded-xl shadow-2xl max-w-md w-full relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-cyan-500 p-4 rounded-t-xl flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Beaker className="w-5 h-5" />
+                  {selectedDrug}
+                </h2>
+                <button 
+                  onClick={closeModal} 
+                  className="text-white hover:bg-cyan-600 rounded-full p-1 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6">
+                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img
+                    src={`/api/placeholder/640/360`}
+                    alt={`Preview of ${selectedDrug}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-4 text-center">
+                  This is a preview image for {selectedDrug}. Click outside to close.
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-gray-500 mt-2">
-              This is a preview image for {selectedDrug}. Click anywhere outside or press ESC to close.
-            </p>
-          </DialogContent>
-        </Dialog>
+          </div>
+        )}
       </div>
     </div>
   );
