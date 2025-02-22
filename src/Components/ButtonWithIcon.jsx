@@ -1,5 +1,3 @@
-import React from "react";
-
 const ButtonWithIcon = ({ icon, label, onClick, className }) => {
   return (
     <button
