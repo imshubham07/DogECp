@@ -76,7 +76,8 @@ export default function ExperimentComponent() {
         />
       </div>
 
-      <ExperimentGraph isRunning={isRunning} selectedDrug={selectedDrug} />
+      {/* <ExperimentGraph isRunning={isRunning} selectedDrug={selectedDrug} /> */}
+      <ExperimentGraph heartRate={150} bloodPressure={112.5} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg shadow">
