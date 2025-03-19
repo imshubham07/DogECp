@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -23,64 +23,127 @@ ChartJS.register(
   Legend
 );
 
-const ExperimentGraph = ({ heartRate = 145, bloodPressure = 120 }) => {
+const ExperimentGraph = ({ heartRateData, bpData }) => {
   const chartRef = useRef(null);
-  const [heartRateData, setHeartRateData] = useState([]);
-  const [bpData, setBpData] = useState([]);
   const [timePoints, setTimePoints] = useState([]);
+  const [processedHeartRate, setProcessedHeartRate] = useState([]);
+  const [processedBP, setProcessedBP] = useState([]);
+  const [simulationActive, setSimulationActive] = useState(true);
 
+  // Function to add subtle oscillations to data
+  const addRealisticOscillations = (baseData, settings) => {
+    if (!baseData || baseData.length === 0) return [];
+    
+    const { amplitude, frequency, noiseFactor } = settings;
+    const result = [];
+    
+    // Process each data point
+    for (let i = 0; i < baseData.length; i++) {
+      if (baseData[i] === null) {
+        result.push(null);
+        continue;
+      }
+      
+      // Base value plus oscillation 
+      const oscillation = amplitude * Math.sin(2 * Math.PI * frequency * i / 10);
+      // Add some randomness for more realistic look
+      const noise = noiseFactor * (Math.random() - 0.5);
+      
+      result.push(baseData[i] + oscillation + noise);
+    }
+    
+    return result;
+  };
+
+  // Live simulation effect
   useEffect(() => {
-    // Generate 91 time points (0 to 90)
+    if (!simulationActive) return;
+    
+    const interval = setInterval(() => {
+      // Recalculate oscillations slightly differently each time
+      setProcessedHeartRate(prev => {
+        if (!heartRateData || heartRateData.length === 0) return prev;
+        return addRealisticOscillations(heartRateData, {
+          amplitude: 0.8,
+          frequency: 0.5 + Math.random() * 0.1, // Slight frequency variation
+          noiseFactor: 0.3
+        });
+      });
+      
+      setProcessedBP(prev => {
+        if (!bpData || bpData.length === 0) return prev;
+        return addRealisticOscillations(bpData, {
+          amplitude: 1.5,
+          frequency: 0.7 + Math.random() * 0.2, // Slight frequency variation
+          noiseFactor: 0.7
+        });
+      });
+    }, 100); // Update every 100ms for smooth appearance
+    
+    return () => clearInterval(interval);
+  }, [heartRateData, bpData, simulationActive]);
+
+  // Set up time points
+  useEffect(() => {
     const points = Array.from({ length: 91 }, (_, i) => i);
     setTimePoints(points);
-
-    // Initialize data with null until X=90, then set the provided values
-    const initialHeartRate = Array(91).fill(null);
-    initialHeartRate[90] = heartRate;
     
-    const initialBP = Array(91).fill(null);
-    initialBP[90] = bloodPressure;
-
-    setHeartRateData(initialHeartRate);
-    setBpData(initialBP);
-  }, [heartRate, bloodPressure]);
+    // Initial processing
+    if (heartRateData && heartRateData.length > 0) {
+      setProcessedHeartRate(addRealisticOscillations(heartRateData, {
+        amplitude: 0.8,
+        frequency: 0.5,
+        noiseFactor: 0.3
+      }));
+    }
+    
+    if (bpData && bpData.length > 0) {
+      setProcessedBP(addRealisticOscillations(bpData, {
+        amplitude: 1.5,
+        frequency: 0.7,
+        noiseFactor: 0.7
+      }));
+    }
+  }, []);
 
   const data = {
     labels: timePoints,
     datasets: [
       {
         label: 'Heart Rate',
-        data: heartRateData,
+        data: processedHeartRate,
         borderColor: '#ff4500',
         yAxisID: 'yLeft',
-        tension: 0,
-        pointRadius: 0,
-        borderWidth: 2,
-        spanGaps: true, // Allows gaps in data (null values)
+        tension: 0.1,
+        pointRadius: 0, // No points for smoother line
+        borderWidth: 1.5,
+        spanGaps: false,
       },
       {
         label: 'Mean BP',
-        data: bpData,
+        data: processedBP,
         borderColor: '#0000ff',
         yAxisID: 'yRight',
-        tension: 0,
-        pointRadius: 0,
-        borderWidth: 2,
-        spanGaps: true,
+        tension: 0.1,
+        pointRadius: 0, // No points for smoother line
+        borderWidth: 1.5,
+        spanGaps: false,
       },
     ],
   };
 
-
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 0 // Disable animations for better performance
+    },
     plugins: {
       legend: { 
-        display: true, 
-        position: 'bottom', // Legend at the bottom, matching the image
+        display: true,
+        position: 'bottom',
         labels: {
-          boxWidth: 20, // Wider legend boxes for better visibility
+          boxWidth: 20,
           boxHeight: 10,
           font: { size: 12 }
         }
@@ -96,46 +159,50 @@ const ExperimentGraph = ({ heartRate = 145, bloodPressure = 120 }) => {
           color: '#000' 
         },
         ticks: { 
-          color: '#000', // Black text for X-axis labels
-          stepSize: 10, // Match the X-axis intervals in the image (0, 10, 20, ..., 90)
-          callback: (value) => value // Ensure plain numbers
+          color: '#000',
+          stepSize: 10,
+          callback: (value) => value
         },
+        grid: {
+          color: '#e0e0e0',
+          drawBorder: true
+        }
       },
       yLeft: {
         min: 0,
-        max: 220, // Match the image's Y-axis range for heart rate
+        max: 220,
         position: 'left',
         ticks: { 
-          color: '#ff4500', // Orange/red for heart rate, matching image
-          stepSize: 20, // Match the grid intervals in the image
-          callback: (value) => value // Ensure plain numbers
+          color: '#ff4500',
+          stepSize: 20,
+          callback: (value) => value
         },
         title: { 
           text: 'Heart Rate (bpm)', 
-          color: '#ff4500', // Orange/red for heart rate
+          color: '#ff4500',
           display: true 
         },
         grid: { 
-          color: '#e0e0e0', // Light gray grid lines, matching image
+          color: '#e0e0e0',
           drawBorder: true 
         },
       },
       yRight: {
         min: 0,
-        max: 200, // Match the image's Y-axis range for blood pressure
+        max: 200,
         position: 'right',
         ticks: { 
-          color: '#0000ff', // Blue for blood pressure, matching image
-          stepSize: 20, // Match the grid intervals in the image
-          callback: (value) => value // Ensure plain numbers
+          color: '#0000ff',
+          stepSize: 20,
+          callback: (value) => value
         },
         title: { 
           text: 'Mean BP (mm Hg)', 
-          color: '#0000ff', // Blue for blood pressure
+          color: '#0000ff',
           display: true 
         },
         grid: { 
-          drawOnChartArea: false, // No grid lines on right Y-axis, matching image
+          drawOnChartArea: false,
           drawBorder: true 
         },
       },
@@ -149,7 +216,8 @@ const ExperimentGraph = ({ heartRate = 145, bloodPressure = 120 }) => {
       width: '100%', 
       backgroundColor: '#ffffff', 
       padding: '20px', 
-      borderRadius: '8px' 
+      borderRadius: '8px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
     }}>
       <Chart
         ref={chartRef}
