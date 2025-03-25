@@ -417,7 +417,7 @@ export default function ExperimentComponent() {
       <ExperimentGraph 
         heartRateData={heartRateData} 
         bpData={bpData} 
-        interventions={interventions} 
+        // interventions={interventions} 
       />
 
       {/* Status panels */}
