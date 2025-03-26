@@ -1,18 +1,44 @@
+import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 
-// Manually input the exact data points from the image
-const data = [
-  { time: 0, orangeMetric: 0, blueMetric: 0 },
-  { time: 90, orangeMetric: 0, blueMetric: 0 }
-];
+const drugImages = {
+  'Carotid occlusion': '/assets/drug/normal.png',
+  'Central vagus': '/images/central-vagus.png',
+  'Peripheral vagus': '/images/peripheral-vagus.png',
+  'Epinephrine': '/images/epinephrine.png',
+  'Norepinephrine': '/images/norepinephrine.png',
+  'Isoprenaline': '/images/isoprenaline.png',
+  'Acetylcholine': '/images/acetylcholine.png',
+  'Histamine': '/images/histamine.png',
+  'Ephedrine': '/images/ephedrine.png',
+  'Phentolamine': '/images/phentolamine.png',
+  'Propranolol': '/images/propranolol.png',
+  'Atropine': '/images/atropine.png',
+  'Mepyramine': '/images/mepyramine.png',
+  'Cimetidine': '/images/cimetidine.png'
+};
 
-const ExperimentGraph = () => {
+const ExperimentGraph = ({ 
+  heartRateData, 
+  bpData, 
+  selectedDrug 
+}) => {
+  // Prepare data for the chart (keep original data structure)
+  const chartData = heartRateData.map((hr, index) => ({
+    time: index,
+    orangeMetric: hr,
+    blueMetric: bpData[index]
+  })).filter(item => item.orangeMetric !== null);
+
+  // Add null check for selectedDrug and use optional chaining
+  const drugImageSrc = selectedDrug ? drugImages[selectedDrug] : null;
+
   return (
-    <div style={{ width: '100%', height: '400px' }}>
+    <div style={{ position: 'relative', width: '100%', height: '400px' }}>
       <LineChart
         width={1800}
         height={400}
-        data={data}
+        data={chartData}
         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
       >
         <CartesianGrid 
@@ -22,10 +48,6 @@ const ExperimentGraph = () => {
           horizontal={true}
         />
         <XAxis 
-          type="number"
-          dataKey="time"
-          domain={[0, 90]}
-          tickCount={46}
           label={{ 
             value: 'Time (sec)', 
             position: 'insideBottom', 
@@ -37,7 +59,7 @@ const ExperimentGraph = () => {
           domain={[0, 220]}
           tickCount={12}
           label={{ 
-            value: 'Heat Rate (left)', 
+            value: 'Orange Metric (HR)', 
             angle: -90, 
             position: 'insideLeft',
             offset: 10 
@@ -49,29 +71,39 @@ const ExperimentGraph = () => {
           domain={[0, 200]}
           tickCount={11}
           label={{ 
-            value: 'Heat Rate (right)', 
+            value: 'Blue Metric (BP)', 
             angle: 90, 
             position: 'insideRight',
             offset: 10 
           }}
         />
-        <Line 
-          yAxisId="left"
-          type="monotone"
-          dataKey="orangeMetric"
-          stroke="#ff7f0e"
-          strokeWidth={2}
-          dot={false}
-        />
-        <Line 
-          yAxisId="right"
-          type="monotone"
-          dataKey="blueMetric"
-          stroke="#1f77b4"
-          strokeWidth={2}
-          dot={false}
-        />
+        {/* Remove Line components */}
       </LineChart>
+
+      {/* Overlay image when a drug is selected */}
+      {drugImageSrc && (
+        <div 
+          style={{
+            position: 'absolute', 
+            top: '50%', 
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: '80%',
+            maxHeight: '80%',
+            zIndex: 10
+          }}
+        >
+          <img 
+            src={drugImageSrc} 
+            alt={`${selectedDrug} graph`}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

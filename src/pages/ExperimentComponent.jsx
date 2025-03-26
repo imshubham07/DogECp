@@ -1,121 +1,128 @@
 import { useState, useEffect } from "react";
-import { FaClipboardList, FaExclamationTriangle, FaDog, FaVial, FaBan, FaCog } from "react-icons/fa";
+import {
+  FaClipboardList,
+  FaExclamationTriangle,
+  FaDog,
+  FaVial,
+  FaBan,
+  FaCog,
+} from "react-icons/fa";
 import ButtonWithIcon from "../Components/ButtonWithIcon";
 import ExperimentGraph from "../Components/ExperimentGraph";
 
 const drugs = [
-  { 
-    name: "Carotid occlusion", 
-    isDuration: true, 
+  {
+    name: "Carotid occlusion",
+    isDuration: true,
     duration: 15,
-    hr: 145, 
+    hr: 145,
     bp: 125,
-    responseType: "carotid"
+    responseType: "carotid",
   },
-  { 
-    name: "Central vagus", 
-    isDuration: true, 
+  {
+    name: "Central vagus",
+    isDuration: true,
     duration: 15,
-    hr: 140, 
-    bp: 118 
+    hr: 140,
+    bp: 118,
   },
-  { 
-    name: "Peripheral vagus", 
-    isDuration: true, 
+  {
+    name: "Peripheral vagus",
+    isDuration: true,
     duration: 20,
-    hr: 135, 
-    bp: 115 
+    hr: 135,
+    bp: 115,
   },
-  { 
-    name: "Epinephrine", 
-    isDuration: false, 
-    recommendedDose: 2, 
+  {
+    name: "Epinephrine",
+    isDuration: false,
+    recommendedDose: 2,
     range: "1-3",
     hr: 160,
     bp: 135,
-    responseType: "epi"
+    responseType: "epi",
   },
-  { 
-    name: "Norepinephrine", 
-    isDuration: false, 
-    recommendedDose: 3, 
+  {
+    name: "Norepinephrine",
+    isDuration: false,
+    recommendedDose: 3,
     range: "2-5",
     hr: 155,
-    bp: 130
+    bp: 130,
   },
-  { 
-    name: "Isoprenaline", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Isoprenaline",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 165,
-    bp: 125
+    bp: 125,
   },
-  { 
-    name: "Acetylcholine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Acetylcholine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 125,
-    bp: 105
+    bp: 105,
   },
-  { 
-    name: "Histamine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Histamine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 170,
-    bp: 140
+    bp: 140,
   },
-  { 
-    name: "Ephedrine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Ephedrine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 150,
-    bp: 128
+    bp: 128,
   },
-  { 
-    name: "Phentolamine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Phentolamine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 142,
     bp: 118,
-    responseType: "phento"
+    responseType: "phento",
   },
-  { 
-    name: "Propranolol", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Propranolol",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "500-1500",
     hr: 130,
-    bp: 112
+    bp: 112,
   },
-  { 
-    name: "Atropine", 
-    isDuration: false, 
-    recommendedDose: 800, 
+  {
+    name: "Atropine",
+    isDuration: false,
+    recommendedDose: 800,
     range: "600-1200",
     hr: 148,
-    bp: 124
+    bp: 124,
   },
-  { 
-    name: "Mepyramine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Mepyramine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "800-1200",
     hr: 132,
-    bp: 114
+    bp: 114,
   },
-  { 
-    name: "Cimetidine", 
-    isDuration: false, 
-    recommendedDose: 1000, 
+  {
+    name: "Cimetidine",
+    isDuration: false,
+    recommendedDose: 1000,
     range: "800-1200",
     hr: 128,
-    bp: 110
-  }
+    bp: 110,
+  },
 ];
 
 export default function ExperimentComponent() {
@@ -128,7 +135,7 @@ export default function ExperimentComponent() {
   const [bpData, setBpData] = useState(Array(91).fill(null));
   const [interventions, setInterventions] = useState([]); // Track intervention points for SVG markers
 
-  const currentDrug = drugs.find(drug => drug.name === selectedDrug);
+  const currentDrug = drugs.find((drug) => drug.name === selectedDrug);
 
   useEffect(() => {
     // Initialize with default values at 0th index
@@ -145,28 +152,28 @@ export default function ExperimentComponent() {
     setSelectedDrug(drugName);
     setShowWarning(false);
     setDose("");
-    
-    const selected = drugs.find(drug => drug.name === drugName);
+
+    const selected = drugs.find((drug) => drug.name === drugName);
     setDuration(selected?.isDuration ? selected.duration : 0);
   };
 
   const handleDoseChange = (e) => {
     const newDose = e.target.value;
     setDose(newDose);
-    
+
     if (currentDrug && !currentDrug.isDuration) {
-      const [min, max] = currentDrug.range.split('-').map(Number);
+      const [min, max] = currentDrug.range.split("-").map(Number);
       setShowWarning(newDose < min || newDose > max);
     }
   };
 
   const handleApply = () => {
     if (!currentDrug) return;
-  
+
     // Create copies of the current data arrays
     const newHR = [...heartRateData];
     const newBP = [...bpData];
-  
+
     // Find last existing value
     let lastIndex = 0;
     for (let i = 0; i < newHR.length; i++) {
@@ -176,100 +183,102 @@ export default function ExperimentComponent() {
         break; // Stop at first null value
       }
     }
-  
+
     const lastHR = newHR[lastIndex] || 130;
     const lastBP = newBP[lastIndex] || 110;
-    
+
     // Start point for new data (either continue from last point or start fresh)
     const startIndex = lastIndex > 0 ? lastIndex + 1 : 0;
-    
+
     // If it's a fresh start, set initial values
     if (startIndex === 0) {
       newHR[0] = 130;
       newBP[0] = 110;
     }
-    
+
     // Model realistic drug response
     // Different patterns based on drug type
     if (currentDrug.isDuration) {
       // For procedures (like carotid occlusion, vagus stimulation)
       const responseLength = currentDrug.duration;
       const peakAt = Math.floor(responseLength * 0.3); // Peak early
-      
+
       for (let i = 0; i < responseLength + 10; i++) {
         const pos = startIndex + i;
         if (pos >= newHR.length) break;
-        
+
         if (i < peakAt) {
           // Rapid onset
           const progress = i / peakAt;
           newHR[pos] = lastHR + (currentDrug.hr - lastHR) * progress;
           newBP[pos] = lastBP + (currentDrug.bp - lastBP) * progress;
-        } 
-        else if (i < responseLength) {
+        } else if (i < responseLength) {
           // Plateau during procedure
           newHR[pos] = currentDrug.hr;
           newBP[pos] = currentDrug.bp;
-        } 
-        else {
+        } else {
           // Recovery after procedure ends
           const recovery = (i - responseLength) / 10;
           newHR[pos] = currentDrug.hr + (lastHR - currentDrug.hr) * recovery;
           newBP[pos] = currentDrug.bp + (lastBP - currentDrug.bp) * recovery;
         }
       }
-    } 
-    else {
+    } else {
       // For drugs (like epinephrine, acetylcholine)
       const responseLength = 35; // Longer for drugs
       const onsetDelay = 3; // Delay before onset
       const peakAt = 10; // Time to peak effect
       const plateauLength = 5; // How long peak effect lasts
       const recoveryStart = peakAt + plateauLength;
-      
+
       for (let i = 0; i < responseLength; i++) {
         const pos = startIndex + i;
         if (pos >= newHR.length) break;
-        
+
         if (i < onsetDelay) {
           // Slight delay before drug takes effect
           newHR[pos] = lastHR;
           newBP[pos] = lastBP;
-        }
-        else if (i < peakAt + onsetDelay) {
+        } else if (i < peakAt + onsetDelay) {
           // Gradual onset
           const progress = (i - onsetDelay) / peakAt;
           // Use easing function for more natural curve (cubic)
           const easedProgress = progress * progress * (3 - 2 * progress);
           newHR[pos] = lastHR + (currentDrug.hr - lastHR) * easedProgress;
           newBP[pos] = lastBP + (currentDrug.bp - lastBP) * easedProgress;
-        }
-        else if (i < recoveryStart + onsetDelay) {
+        } else if (i < recoveryStart + onsetDelay) {
           // Maintain peak effect
           newHR[pos] = currentDrug.hr;
           newBP[pos] = currentDrug.bp;
-        }
-        else {
+        } else {
           // Gradual recovery
-          const recovery = (i - (recoveryStart + onsetDelay)) / (responseLength - (recoveryStart + onsetDelay));
+          const recovery =
+            (i - (recoveryStart + onsetDelay)) /
+            (responseLength - (recoveryStart + onsetDelay));
           // Use different easing for recovery (often slower than onset)
           const easedRecovery = recovery * recovery;
-          newHR[pos] = currentDrug.hr + (lastHR - currentDrug.hr) * easedRecovery;
-          newBP[pos] = currentDrug.bp + (lastBP - currentDrug.bp) * easedRecovery;
+          newHR[pos] =
+            currentDrug.hr + (lastHR - currentDrug.hr) * easedRecovery;
+          newBP[pos] =
+            currentDrug.bp + (lastBP - currentDrug.bp) * easedRecovery;
         }
       }
     }
-    
+
     // Add intervention marker
     const newInterventions = [...interventions];
     newInterventions.push({
       position: startIndex,
-      type: currentDrug.responseType || 'generic',
-      label: currentDrug.isDuration ? 
-        `${currentDrug.name.slice(0, 2).toUpperCase()}(${currentDrug.duration})` : 
-        `${currentDrug.name.slice(0, 3)}(${dose || currentDrug.recommendedDose})`
+      type: currentDrug.responseType || "generic",
+      label: currentDrug.isDuration
+        ? `${currentDrug.name.slice(0, 2).toUpperCase()}(${
+            currentDrug.duration
+          })`
+        : `${currentDrug.name.slice(0, 3)}(${
+            dose || currentDrug.recommendedDose
+          })`,
     });
-    
+
     setHeartRateData(newHR);
     setBpData(newBP);
     setInterventions(newInterventions);
@@ -294,7 +303,7 @@ export default function ExperimentComponent() {
     // Create copies of the current data arrays
     const newHR = [...heartRateData];
     const newBP = [...bpData];
-  
+
     // Find last existing value
     let lastIndex = 0;
     for (let i = 0; i < newHR.length; i++) {
@@ -304,37 +313,37 @@ export default function ExperimentComponent() {
         break;
       }
     }
-  
+
     const startIndex = lastIndex > 0 ? lastIndex + 1 : 0;
-    
+
     // If it's a fresh start, set initial values
     if (startIndex === 0) {
       newHR[0] = 130;
       newBP[0] = 110;
     }
-    
+
     // Saline typically has minimal effect - just small fluctuations
     for (let i = 0; i < 15; i++) {
       const pos = startIndex + i;
       if (pos >= newHR.length) break;
-      
+
       // Get previous values
-      const prevHR = newHR[pos-1] || newHR[lastIndex];
-      const prevBP = newBP[pos-1] || newBP[lastIndex];
-      
+      const prevHR = newHR[pos - 1] || newHR[lastIndex];
+      const prevBP = newBP[pos - 1] || newBP[lastIndex];
+
       // Small random fluctuations (± 3 units)
       newHR[pos] = prevHR + (Math.random() * 6 - 3);
       newBP[pos] = prevBP + (Math.random() * 6 - 3);
     }
-    
+
     // Add marker for saline
     const newInterventions = [...interventions];
     newInterventions.push({
       position: startIndex,
-      type: 'saline',
-      label: 'SAL'
+      type: "saline",
+      label: "SAL",
     });
-    
+
     setHeartRateData(newHR);
     setBpData(newBP);
     setInterventions(newInterventions);
@@ -343,11 +352,11 @@ export default function ExperimentComponent() {
   const handleRemoveBlocker = () => {
     // Simulate removal of a blocker (antagonist)
     // This typically leads to a return toward baseline
-    
+
     // Create copies of the current data arrays
     const newHR = [...heartRateData];
     const newBP = [...bpData];
-  
+
     // Find last existing value
     let lastIndex = 0;
     for (let i = 0; i < newHR.length; i++) {
@@ -357,34 +366,34 @@ export default function ExperimentComponent() {
         break;
       }
     }
-    
+
     const baselineHR = 130;
     const baselineBP = 110;
     const lastHR = newHR[lastIndex];
     const lastBP = newBP[lastIndex];
     const startIndex = lastIndex + 1;
-    
+
     // Recovery curve - gradual return to baseline over 30 time units
     for (let i = 0; i < 30; i++) {
       const pos = startIndex + i;
       if (pos >= newHR.length) break;
-      
+
       // Cubic easing function for natural recovery
       const progress = i / 30;
       const easedProgress = progress * progress * (3 - 2 * progress);
-      
+
       newHR[pos] = lastHR + (baselineHR - lastHR) * easedProgress;
       newBP[pos] = lastBP + (baselineBP - lastBP) * easedProgress;
     }
-    
+
     // Add marker for blocker removal
     const newInterventions = [...interventions];
     newInterventions.push({
       position: startIndex,
-      type: 'blocker',
-      label: 'REM'
+      type: "blocker",
+      label: "REM",
     });
-    
+
     setHeartRateData(newHR);
     setBpData(newBP);
     setInterventions(newInterventions);
@@ -414,10 +423,10 @@ export default function ExperimentComponent() {
       </div>
 
       {/* Graph component - now passing the interventions data */}
-      <ExperimentGraph 
-        heartRateData={heartRateData} 
-        bpData={bpData} 
-        // interventions={interventions} 
+      <ExperimentGraph
+        heartRateData={heartRateData}
+        bpData={bpData}
+        selectedDrug={selectedDrug}
       />
 
       {/* Status panels */}
@@ -430,7 +439,9 @@ export default function ExperimentComponent() {
         {currentDrug?.isDuration ? (
           <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-sm text-gray-600 mb-1">Duration</p>
-            <p className="text-lg font-semibold text-green-600">{duration} sec</p>
+            <p className="text-lg font-semibold text-green-600">
+              {duration} sec
+            </p>
           </div>
         ) : (
           <>
@@ -441,7 +452,9 @@ export default function ExperimentComponent() {
                   type="number"
                   value={dose}
                   onChange={handleDoseChange}
-                  className={`w-full p-2 border rounded-lg ${showWarning ? 'border-red-400' : 'border-gray-300'}`}
+                  className={`w-full p-2 border rounded-lg ${
+                    showWarning ? "border-red-400" : "border-gray-300"
+                  }`}
                   placeholder="Enter dose"
                 />
                 {showWarning && (
@@ -454,8 +467,12 @@ export default function ExperimentComponent() {
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
               <p className="text-sm text-gray-600 mb-1">Recommended Dose</p>
-              <p className="text-lg font-semibold text-green-600">{currentDrug?.recommendedDose} µg/kg</p>
-              <p className="text-xs text-gray-500 mt-1">Range: {currentDrug?.range} µg/kg</p>
+              <p className="text-lg font-semibold text-green-600">
+                {currentDrug?.recommendedDose} µg/kg
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Range: {currentDrug?.range} µg/kg
+              </p>
             </div>
           </>
         )}
