@@ -59,8 +59,8 @@ const drugs = [
   {
     name: "Isoprenaline",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "500-1500",
+    recommendedDose: 3,
+    range: "2-5",
     hr: 165,
     bp: 125,
     responseType: "iso",
@@ -69,8 +69,8 @@ const drugs = [
   {
     name: "Acetylcholine",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "500-1500",
+    recommendedDose: 5,
+    range: "2-10",
     hr: 125,
     bp: 105,
     responseType: "ach",
@@ -78,8 +78,8 @@ const drugs = [
   {
     name: "Histamine",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "500-1500",
+    recommendedDose: 3,
+    range: "2-5",
     hr: 170,
     bp: 140,
     responseType: "hist",
@@ -87,8 +87,8 @@ const drugs = [
   {
     name: "Ephedrine",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "500-1500",
+    recommendedDose: 200,
+    range: "100-200",
     hr: 150,
     bp: 128,
     responseType: "ephed",
@@ -97,7 +97,7 @@ const drugs = [
     name: "Phentolamine",
     isDuration: false,
     recommendedDose: 1000,
-    range: "500-1500",
+    range: "1000",
     hr: 142,
     bp: 118,
     responseType: "phento",
@@ -106,7 +106,7 @@ const drugs = [
     name: "Propranolol",
     isDuration: false,
     recommendedDose: 1000,
-    range: "500-1500",
+    range: "1000",
     hr: 130,
     bp: 112,
     responseType: "prop",
@@ -114,8 +114,8 @@ const drugs = [
   {
     name: "Atropine",
     isDuration: false,
-    recommendedDose: 800,
-    range: "600-1200",
+    recommendedDose: 750,
+    range: "500-1000",
     hr: 148,
     bp: 124,
     responseType: "atro",
@@ -123,8 +123,8 @@ const drugs = [
   {
     name: "Mepyramine",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "800-1200",
+    recommendedDose: 5000,
+    range: "5000",
     hr: 132,
     bp: 114,
     responseType: "mepy",
@@ -132,8 +132,8 @@ const drugs = [
   {
     name: "Cimetidine",
     isDuration: false,
-    recommendedDose: 1000,
-    range: "800-1200",
+    recommendedDose: 5000,
+    range: "5000",
     hr: 128,
     bp: 110,
     responseType: "cime",
@@ -530,7 +530,7 @@ export default function ExperimentComponent() {
             onClick={handleNewDog}
             className="bg-indigo-50/70 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
           />
-          <ButtonWithIcon
+          {/* <ButtonWithIcon
             icon={<FaClipboardList className="mr-2" />}
             label="Save Results"
             className="bg-purple-50/70 text-purple-600 border border-purple-200 hover:bg-purple-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
@@ -539,7 +539,7 @@ export default function ExperimentComponent() {
             icon={<FaCog className="mr-2" />}
             label="Settings"
             className="bg-gray-50/70 text-gray-600 border border-gray-200 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
-          />
+          /> */}
         </div>
       </div>
     </div>
