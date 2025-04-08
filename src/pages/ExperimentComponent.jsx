@@ -1,16 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaClipboardList,
-  FaExclamationTriangle,
-  FaDog,
-  FaVial,
-  FaBan,
-  FaCog,
-} from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaExclamationTriangle, FaDog, FaVial, FaBan } from "react-icons/fa";
 import ButtonWithIcon from "../Components/ButtonWithIcon";
 import ExperimentGraph from "../Components/ExperimentGraph";
 
-// Drug list with comprehensive details
 const drugs = [
   {
     name: "Carotid occlusion",
@@ -20,6 +12,7 @@ const drugs = [
     bp: 125,
     responseType: "carotid",
   },
+
   {
     name: "Central vagus",
     isDuration: true,
@@ -28,6 +21,7 @@ const drugs = [
     bp: 118,
     responseType: "vagus",
   },
+
   {
     name: "Peripheral vagus",
     isDuration: true,
@@ -36,6 +30,7 @@ const drugs = [
     bp: 115,
     responseType: "vagus",
   },
+
   {
     name: "Epinephrine",
     isDuration: false,
@@ -46,6 +41,7 @@ const drugs = [
     responseType: "epi",
     hasDoseImages: true,
   },
+
   {
     name: "Norepinephrine",
     isDuration: false,
@@ -56,6 +52,7 @@ const drugs = [
     responseType: "norepi",
     hasDoseImages: true,
   },
+
   {
     name: "Isoprenaline",
     isDuration: false,
@@ -66,6 +63,7 @@ const drugs = [
     responseType: "iso",
     hasDoseImages: true,
   },
+
   {
     name: "Acetylcholine",
     isDuration: false,
@@ -75,6 +73,7 @@ const drugs = [
     bp: 105,
     responseType: "ach",
   },
+
   {
     name: "Histamine",
     isDuration: false,
@@ -84,6 +83,7 @@ const drugs = [
     bp: 140,
     responseType: "hist",
   },
+
   {
     name: "Ephedrine",
     isDuration: false,
@@ -93,6 +93,7 @@ const drugs = [
     bp: 128,
     responseType: "ephed",
   },
+
   {
     name: "Phentolamine",
     isDuration: false,
@@ -102,6 +103,7 @@ const drugs = [
     bp: 118,
     responseType: "phento",
   },
+
   {
     name: "Propranolol",
     isDuration: false,
@@ -111,6 +113,7 @@ const drugs = [
     bp: 112,
     responseType: "prop",
   },
+
   {
     name: "Atropine",
     isDuration: false,
@@ -120,6 +123,7 @@ const drugs = [
     bp: 124,
     responseType: "atro",
   },
+
   {
     name: "Mepyramine",
     isDuration: false,
@@ -129,6 +133,7 @@ const drugs = [
     bp: 114,
     responseType: "mepy",
   },
+
   {
     name: "Cimetidine",
     isDuration: false,
@@ -141,23 +146,63 @@ const drugs = [
 ];
 
 export default function ExperimentComponent() {
-  // State variables
   const [selectedDrug, setSelectedDrug] = useState("None");
   const [duration, setDuration] = useState(0);
   const [dogNumber, setDogNumber] = useState(1);
   const [dose, setDose] = useState("");
-  const [appliedDose, setAppliedDose] = useState("");  // New state to store the applied dose
+  const [appliedDose, setAppliedDose] = useState("");
   const [showWarning, setShowWarning] = useState(false);
   const [heartRateData, setHeartRateData] = useState(Array(91).fill(null));
   const [bpData, setBpData] = useState(Array(91).fill(null));
   const [interventions, setInterventions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isApplied, setIsApplied] = useState(false);
+  const [isDogDead, setIsDogDead] = useState(false);
+  const [showDeathPopup, setShowDeathPopup] = useState(false);
 
-  // Find current selected drug
-  const currentDrug = drugs.find((drug) => drug.name === selectedDrug);
+  const DeathPopup = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
+      <div className="bg-white/90 p-8 rounded-lg shadow-xl flex flex-col items-center">
+        <FaExclamationTriangle className="text-red-500 text-4xl mb-4" />
+        <h2 className="text-2xl font-bold mb-4">TOXIC DOSE!</h2>
+        <p className="text-lg mb-4">Dog has dead due to toxic doses</p>
+        <button
+          onClick={() => setShowDeathPopup(false)}
+          className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
 
-  // Initialize baseline data
+  const LoadingPopup = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
+      <div className="bg-white/90 p-8 rounded-lg shadow-xl flex flex-col items-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
+        <p className="text-lg font-semibold text-gray-700">Loading...</p>
+      </div>
+    </div>
+  );
+
+  const handleNewDog = () => {
+    setDogNumber(dogNumber + 1);
+    const initialHR = Array(91).fill(null);
+    const initialBP = Array(91).fill(null);
+    initialHR[0] = 130;
+    initialBP[0] = 110;
+    setHeartRateData(initialHR);
+    setBpData(initialBP);
+    setInterventions([]);
+    setSelectedDrug("None");
+    setDose("");
+    setAppliedDose("");
+    setShowWarning(false);
+    setIsApplied(false);
+    setIsDogDead(false);
+    setShowDeathPopup(false);
+  };
+
   useEffect(() => {
     const initialHR = Array(91).fill(null);
     const initialBP = Array(91).fill(null);
@@ -166,9 +211,10 @@ export default function ExperimentComponent() {
     setHeartRateData(initialHR);
     setBpData(initialBP);
     setIsApplied(false);
-  }, []);
+  }, [isDogDead]);
 
-  // Drug selection handler
+  const currentDrug = drugs.find((drug) => drug.name === selectedDrug);
+
   const handleDrugChange = (e) => {
     const drugName = e.target.value;
     setSelectedDrug(drugName);
@@ -178,22 +224,19 @@ export default function ExperimentComponent() {
     const selected = drugs.find((drug) => drug.name === drugName);
     if (selected) {
       setDuration(selected.isDuration ? selected.duration : 0);
-      
-      // Auto-populate the dose field with the recommended dose if it's not a duration-based drug
       if (!selected.isDuration && selected.recommendedDose) {
         setDose(selected.recommendedDose.toString());
-        setAppliedDose("");  // Reset applied dose when drug changes
+        setAppliedDose("");
       } else {
         setDose("");
-        setAppliedDose("");  // Reset applied dose when drug changes
+        setAppliedDose("");
       }
     } else {
       setDose("");
-      setAppliedDose("");  // Reset applied dose when drug changes
+      setAppliedDose("");
     }
   };
 
-  // Dose change handler
   const handleDoseChange = (e) => {
     const newDose = e.target.value;
     setDose(newDose);
@@ -204,12 +247,11 @@ export default function ExperimentComponent() {
     }
   };
 
-  // Apply drug handler
   const handleApply = () => {
-    if (!currentDrug) return;
+    if (!currentDrug || isDogDead) return;
 
     setIsLoading(true);
-    setAppliedDose(dose);  // Store the dose at the time of applying
+    setAppliedDose(dose);
 
     setTimeout(() => {
       const newHR = [...heartRateData];
@@ -277,10 +319,14 @@ export default function ExperimentComponent() {
             newHR[pos] = currentDrug.hr;
             newBP[pos] = currentDrug.bp;
           } else {
-            const recovery = (i - (recoveryStart + onsetDelay)) / (responseLength - (recoveryStart + onsetDelay));
+            const recovery =
+              (i - (recoveryStart + onsetDelay)) /
+              (responseLength - (recoveryStart + onsetDelay));
             const easedRecovery = recovery * recovery;
-            newHR[pos] = currentDrug.hr + (lastHR - currentDrug.hr) * easedRecovery;
-            newBP[pos] = currentDrug.bp + (lastBP - currentDrug.bp) * easedRecovery;
+            newHR[pos] =
+              currentDrug.hr + (lastHR - currentDrug.hr) * easedRecovery;
+            newBP[pos] =
+              currentDrug.bp + (lastBP - currentDrug.bp) * easedRecovery;
           }
         }
       }
@@ -290,8 +336,12 @@ export default function ExperimentComponent() {
         position: startIndex,
         type: currentDrug.responseType || "generic",
         label: currentDrug.isDuration
-          ? `${currentDrug.name.slice(0, 2).toUpperCase()}(${currentDrug.duration})`
-          : `${currentDrug.name.slice(0, 3)}(${dose || currentDrug.recommendedDose})`,
+          ? `${currentDrug.name.slice(0, 2).toUpperCase()}(${
+              currentDrug.duration
+            })`
+          : `${currentDrug.name.slice(0, 3)}(${
+              dose || currentDrug.recommendedDose
+            })`,
       });
 
       setHeartRateData(newHR);
@@ -303,14 +353,17 @@ export default function ExperimentComponent() {
   };
 
   // Inject saline handler
+
   const handleInjectSaline = () => {
     setIsLoading(true);
 
     setTimeout(() => {
       const newHR = [...heartRateData];
+
       const newBP = [...bpData];
 
       let lastIndex = 0;
+
       for (let i = 0; i < newHR.length; i++) {
         if (newHR[i] !== null) {
           lastIndex = i;
@@ -323,40 +376,53 @@ export default function ExperimentComponent() {
 
       if (startIndex === 0) {
         newHR[0] = 130;
+
         newBP[0] = 110;
       }
 
       for (let i = 0; i < 15; i++) {
         const pos = startIndex + i;
+
         if (pos >= newHR.length) break;
 
         const prevHR = newHR[pos - 1] || newHR[lastIndex];
+
         const prevBP = newBP[pos - 1] || newBP[lastIndex];
 
         newHR[pos] = prevHR + (Math.random() * 6 - 3);
+
         newBP[pos] = prevBP + (Math.random() * 6 - 3);
       }
 
       const newInterventions = [...interventions];
+
       newInterventions.push({
         position: startIndex,
+
         type: "saline",
+
         label: "SAL",
       });
 
       setHeartRateData(newHR);
+
       setBpData(newBP);
+
       setInterventions(newInterventions);
+
       setIsLoading(false);
     }, 2000);
   };
 
   // Remove blocker handler
+
   const handleRemoveBlocker = () => {
     const newHR = [...heartRateData];
+
     const newBP = [...bpData];
 
     let lastIndex = 0;
+
     for (let i = 0; i < newHR.length; i++) {
       if (newHR[i] !== null) {
         lastIndex = i;
@@ -366,77 +432,63 @@ export default function ExperimentComponent() {
     }
 
     const baselineHR = 130;
+
     const baselineBP = 110;
+
     const lastHR = newHR[lastIndex];
+
     const lastBP = newBP[lastIndex];
+
     const startIndex = lastIndex + 1;
 
     for (let i = 0; i < 30; i++) {
       const pos = startIndex + i;
+
       if (pos >= newHR.length) break;
 
       const progress = i / 30;
+
       const easedProgress = progress * progress * (3 - 2 * progress);
 
       newHR[pos] = lastHR + (baselineHR - lastHR) * easedProgress;
+
       newBP[pos] = lastBP + (baselineBP - lastBP) * easedProgress;
     }
 
     const newInterventions = [...interventions];
+
     newInterventions.push({
       position: startIndex,
+
       type: "blocker",
+
       label: "REM",
     });
 
     setHeartRateData(newHR);
+
     setBpData(newBP);
+
     setInterventions(newInterventions);
   };
-
-  // New dog handler
-  const handleNewDog = () => {
-    setDogNumber(dogNumber + 1);
-    const initialHR = Array(91).fill(null);
-    const initialBP = Array(91).fill(null);
-    initialHR[0] = 130;
-    initialBP[0] = 110;
-    setHeartRateData(initialHR);
-    setBpData(initialBP);
-    setInterventions([]);
-    setSelectedDrug("None");
-    setDose("");
-    setAppliedDose("");  // Reset applied dose for new dog
-    setShowWarning(false);
-    setIsApplied(false);
-  };
-
-  // Loading popup component
-  const LoadingPopup = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
-      <div className="bg-white/90 p-8 rounded-lg shadow-xl flex flex-col items-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
-        <p className="text-lg font-semibold text-gray-700">Loading...</p>
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gray-50 backdrop-blur-md p-6 relative">
-      {/* Background overlay for additional blur effect */}
       <div className="absolute inset-0 bg-white/30 backdrop-blur-lg"></div>
-      
-      {/* Content container with relative positioning to sit above the blur */}
-      <div className="relative z-10 bg-white/80 p-6 rounded-lg shadow-lg">
-        {/* Loading popup */}
-        {isLoading && <LoadingPopup />}
 
-        {/* Drug selection section */}
+      <div className="relative z-10 bg-white/80 p-6 rounded-lg shadow-lg">
+        {isLoading && <LoadingPopup />}
+        {showDeathPopup && <DeathPopup />}
+
         <div className="flex items-center gap-4 mb-6 bg-white/70 p-4 rounded-lg shadow">
           <select
             value={selectedDrug}
             onChange={handleDrugChange}
-            className="p-3 border rounded-lg w-64 bg-white/80 text-gray-700 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none"
+            disabled={isDogDead}
+            className={`p-3 border rounded-lg w-64 bg-white/80 text-gray-700 ${
+              isDogDead
+                ? "opacity-50 cursor-not-allowed"
+                : "focus:ring-2 focus:ring-blue-400"
+            }`}
           >
             <option value="None">Select Drug/Procedure</option>
             {drugs.map((drug) => (
@@ -445,31 +497,43 @@ export default function ExperimentComponent() {
               </option>
             ))}
           </select>
-          
+
           <ButtonWithIcon
             label="Apply"
             onClick={handleApply}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex-shrink-0"
+            disabled={isDogDead}
+            className={`bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex-shrink-0 ${
+              isDogDead ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+            }`}
           />
         </div>
 
-        {/* Graph component - pass the appliedDose prop */}
         <ExperimentGraph
           heartRateData={heartRateData}
           bpData={bpData}
           selectedDrug={selectedDrug}
           dose={dose}
-          appliedDose={appliedDose}  // Pass the applied dose to the graph component
+          appliedDose={appliedDose}
           isApplied={isApplied}
+          isDogDead={isDogDead}
+          setIsDogDead={(dead) => {
+            setIsDogDead(dead);
+            if (dead) setShowDeathPopup(true);
+          }}
+          onGetNewDog={handleNewDog}
         />
 
-        {/* Status panels with slight transparency */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {/* Status panel cards with white/transparent background */}
           {[
             { title: "Drug Selected", value: selectedDrug, color: "blue" },
             ...(currentDrug?.isDuration
-              ? [{ title: "Duration", value: `${duration} sec`, color: "green" }]
+              ? [
+                  {
+                    title: "Duration",
+                    value: `${duration} sec`,
+                    color: "green",
+                  },
+                ]
               : [
                   {
                     title: "Dose to be Injected",
@@ -478,9 +542,10 @@ export default function ExperimentComponent() {
                         type="number"
                         value={dose}
                         onChange={handleDoseChange}
+                        disabled={isDogDead}
                         className={`w-full p-2 border rounded-lg ${
                           showWarning ? "border-red-400" : "border-gray-300"
-                        }`}
+                        } ${isDogDead ? "opacity-50 cursor-not-allowed" : ""}`}
                         placeholder="Enter dose"
                       />
                     ),
@@ -495,8 +560,8 @@ export default function ExperimentComponent() {
                 ]),
             { title: "Dog Number", value: `#${dogNumber}`, color: "purple" },
           ].map((panel, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-white/70 p-4 rounded-lg shadow backdrop-blur-sm"
             >
               <p className="text-sm text-gray-600 mb-1">{panel.title}</p>
@@ -510,19 +575,24 @@ export default function ExperimentComponent() {
           ))}
         </div>
 
-        {/* Action buttons */}
         <div className="flex flex-wrap gap-3">
           <ButtonWithIcon
             icon={<FaBan className="mr-2" />}
             label="Remove Blocker"
             onClick={handleRemoveBlocker}
-            className="bg-red-50/70 text-red-600 border border-red-200 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
+            disabled={isDogDead}
+            className={`bg-red-50/70 text-red-600 border border-red-200 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm ${
+              isDogDead ? "opacity-50 cursor-not-allowed" : "hover:bg-red-100"
+            }`}
           />
           <ButtonWithIcon
             icon={<FaVial className="mr-2" />}
             label="Inject Saline"
             onClick={handleInjectSaline}
-            className="bg-green-50/70 text-green-600 border border-green-200 hover:bg-green-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
+            disabled={isDogDead}
+            className={`bg-green-50/70 text-green-600 border border-green-200 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm ${
+              isDogDead ? "opacity-50 cursor-not-allowed" : "hover:bg-green-100"
+            }`}
           />
           <ButtonWithIcon
             icon={<FaDog className="mr-2" />}
@@ -530,16 +600,6 @@ export default function ExperimentComponent() {
             onClick={handleNewDog}
             className="bg-indigo-50/70 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
           />
-          {/* <ButtonWithIcon
-            icon={<FaClipboardList className="mr-2" />}
-            label="Save Results"
-            className="bg-purple-50/70 text-purple-600 border border-purple-200 hover:bg-purple-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
-          />
-          <ButtonWithIcon
-            icon={<FaCog className="mr-2" />}
-            label="Settings"
-            className="bg-gray-50/70 text-gray-600 border border-gray-200 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
-          /> */}
         </div>
       </div>
     </div>
