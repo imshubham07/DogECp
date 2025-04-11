@@ -24,7 +24,7 @@ const DrugExperimentUI = () => {
       
       // Check if data has expired (2 hours = 7,200,000 milliseconds)
       const currentTime = new Date().getTime();
-      if (parsedData.timestamp && currentTime - parsedData.timestamp < 7200000) {
+      if (parsedData.timestamp && currentTime - parsedData.timestamp < 1200000) {
         setObservationData(parsedData.data);
       } else {
         // Data has expired, remove it from localStorage
