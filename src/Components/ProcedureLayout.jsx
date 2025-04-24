@@ -1,6 +1,5 @@
 import dog from '../assets/dog.jpg';
 import PrecautionImg from '../assets/Precaution.jpg';
-import Img2 from '../assets/fullviewstrlocal.jpg';
 import Img3 from '../assets/setup.png';
 
 const ProcedureSection = ({ title, steps, showImage, imageSrc }) => (
@@ -48,33 +47,23 @@ const ProcedureLayout = () => {
       steps: [
         "It is fixed on a dog table in supine position.",
       ],
-      showImage: true,
-      imageSrc: Img2
     },
     {
-      title: "Analysis",
+      title: "Step-3",
       steps: [
-        "Process all collected samples according to lab protocol",
-        "Calculate key parameters using standardized formulas",
-        "Interpret findings in context of baseline measurements",
-        "Document any deviations from expected results",
-        "Prepare preliminary data visualization",
-        "Compare results with established reference ranges"
+        "Left common carotid is inserted with an arterial cannula connected to a data acquisition system and a computer display through a pressure transducer. The changes in blood pressure is graphically represented on the computer display."
       ],
-      showImage: true,
-      imageSrc: Img3
     },
     {
-      title: "Post-Procedure Care",
+      title: "Step- 4",
       steps: [
-        "Monitor recovery from anesthesia",
-        "Assess vital signs every 15 minutes during recovery",
-        "Document any post-procedure complications",
-        "Maintain temperature regulation",
-        "Ensure proper hydration and comfort"
+        "Right femoral vein is cannulated with a catheter to inject drugs.",
+        "Its neck is dissected to expose carotid arteries and vagus nerves.",
+        "Left common carotid is inserted with an arterial cannula connected to a data acquisition system and a computer display through a pressure transducer. The changes in blood pressure is graphically represented on the computer display.",
+        "The left side vagus is cut into central and peripheral ends for applying electrical stimulation later in the experiment.",
+        "The right common carotid is identified and exposed for later use.",
+        "Drugs are injected (one by one) into the femoral vein and BP is recorded and displayed on the computer screen. The heart rate (beats/min) is counted and noted on the chart. Drug administration is also marked."
       ],
-      showImage: true,
-      imageSrc: PrecautionImg
     }
   ];
 
@@ -89,7 +78,7 @@ const ProcedureLayout = () => {
       </div>
       <div className="flex-1 max-w-3xl">
         <h2 className="text-2xl font-bold mb-6 text-green-700">
-          Detailed Experiment Procedure
+          Experiment Procedure
         </h2>
         <div className="space-y-6">
           {sections.map((section, idx) => (
